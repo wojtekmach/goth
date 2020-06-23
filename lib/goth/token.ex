@@ -55,6 +55,7 @@ defmodule Goth.Token do
     request(finch, :post, url, headers, body)
   end
 
+  # TODO: remove on Finch v0.3.0
   if Code.ensure_loaded?(Finch) and function_exported?(Finch, :build, 4) do
     defp request(finch, method, url, headers, body) do
       Finch.build(method, url, headers, body)
