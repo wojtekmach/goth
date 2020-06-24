@@ -19,7 +19,7 @@ defmodule Goth.MixProject do
 
   defp deps do
     [
-      {:finch, "~> 0.2.0 or ~> 0.3.0"},
+      {:finch, "~> 0.3.0"},
       {:jason, "~> 1.0"},
       {:jose, "~> 1.0"},
       # TODO: Master version does not emit simple_one_for_one warnings

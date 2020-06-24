@@ -65,18 +65,8 @@ defmodule Goth.Token do
     headers = [{"content-type", "application/x-www-form-urlencoded"}]
     grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     body = "grant_type=#{grant_type}&assertion=#{jwt}"
-    request(finch, :post, url, headers, body)
-  end
 
-  # TODO: remove on Finch v0.3.0
-  if Code.ensure_loaded?(Finch) and function_exported?(Finch, :build, 4) do
-    defp request(finch, method, url, headers, body) do
-      Finch.build(method, url, headers, body)
-      |> Finch.request(finch)
-    end
-  else
-    defp request(finch, method, url, headers, body) do
-      Finch.request(finch, method, url, headers, body)
-    end
+    Finch.build(:post, url, headers, body)
+    |> Finch.request(finch)
   end
 end
