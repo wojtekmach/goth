@@ -1,5 +1,12 @@
 defmodule Goth.Token do
-  defstruct [:token, :type, :expires_at]
+  defstruct [:expires_at, :token, :type, :scope]
+
+  @type t() :: %__MODULE__{
+    expires_at: non_neg_integer(),
+    scope: String.t(),
+    token: String.t(),
+    type: String.t(),
+  }
 
   @doc false
   def fetch(finch, credentials, scope, opts \\ []) do
@@ -10,7 +17,14 @@ defmodule Goth.Token do
         map = Jason.decode!(response.body)
         %{"access_token" => token, "expires_in" => expires_in, "token_type" => type} = map
         expires_at = System.system_time(:second) + expires_in
-        token = %__MODULE__{token: token, type: type, expires_at: expires_at}
+
+        token = %__MODULE__{
+          expires_at: expires_at,
+          scope: scope,
+          token: token,
+          type: type
+        }
+
         {:ok, token}
 
       {:ok, response} ->
