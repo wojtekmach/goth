@@ -66,7 +66,7 @@ defmodule Goth.Server do
   end
 
   defp request(config) do
-    Token.fetch(config.finch, config.credentials, config.scope, url: config.url)
+    Token.fetch(config.finch, config.url, config.credentials, config.scope)
   end
 
   defp get(name) do

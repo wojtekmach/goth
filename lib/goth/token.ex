@@ -9,10 +9,10 @@ defmodule Goth.Token do
   }
 
   @doc false
-  def fetch(finch, credentials, scope, opts \\ []) do
+  def fetch(finch, url, credentials, scope) do
     jwt = jwt(scope, credentials)
 
-    case request(finch, jwt, opts) do
+    case request(finch, url, jwt) do
       {:ok, %{status: 200} = response} ->
         map = Jason.decode!(response.body)
         %{"access_token" => token, "expires_in" => expires_in, "token_type" => type} = map
@@ -61,8 +61,7 @@ defmodule Goth.Token do
     JOSE.JWT.sign(jwk, header, claim_set) |> JOSE.JWS.compact() |> elem(1)
   end
 
-  defp request(finch, jwt, opts) do
-    url = opts[:url] || "https://www.googleapis.com/oauth2/v4/token"
+  defp request(finch, url, jwt) do
     headers = [{"content-type", "application/x-www-form-urlencoded"}]
     grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     body = "grant_type=#{grant_type}&assertion=#{jwt}"
