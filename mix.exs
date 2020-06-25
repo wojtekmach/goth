@@ -23,7 +23,8 @@ defmodule Goth.MixProject do
       {:jason, "~> 1.0"},
       {:jose, "~> 1.0"},
       # TODO: Master version does not emit simple_one_for_one warnings
-      {:bypass, "~> 1.0", github: "PSPDFKit-labs/bypass", only: :test}
+      {:bypass, "~> 1.0", github: "PSPDFKit-labs/bypass", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 end
