@@ -12,7 +12,7 @@ defmodule Goth.Token do
   def fetch(config) do
     jwt = jwt(config.scope, config.credentials)
 
-    case request(config.finch, config.url, jwt) do
+    case request(config.http_client, config.url, jwt) do
       {:ok, %{status: 200} = response} ->
         map = Jason.decode!(response.body)
         %{"access_token" => token, "expires_in" => expires_in, "token_type" => type} = map
@@ -61,12 +61,10 @@ defmodule Goth.Token do
     JOSE.JWT.sign(jwk, header, claim_set) |> JOSE.JWS.compact() |> elem(1)
   end
 
-  defp request(finch, url, jwt) do
+  defp request(http_client, url, jwt) do
     headers = [{"content-type", "application/x-www-form-urlencoded"}]
     grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     body = "grant_type=#{grant_type}&assertion=#{jwt}"
-
-    Finch.build(:post, url, headers, body)
-    |> Finch.request(finch)
+    Goth.HTTPClient.request(http_client, :post, url, headers, body, [])
   end
 end

@@ -23,7 +23,13 @@ defmodule GothTest do
 
     url = "http://localhost:#{bypass.port}"
 
-    start_supervised!({Goth, name: test, finch: Finch, credentials: credentials, url: url})
+    start_supervised!(
+      {Goth,
+       name: test,
+       http_client: {Goth.HTTPClient.Finch, name: Finch},
+       credentials: credentials,
+       url: url}
+    )
 
     {:ok, token} = Goth.fetch(test)
     assert token.token == "dummy"
@@ -55,7 +61,7 @@ defmodule GothTest do
 
     Goth.Server.start_link(
       name: test,
-      finch: Finch,
+      http_client: {Goth.HTTPClient.Finch, name: Finch},
       credentials: credentials,
       url: url,
       cooldown: 10

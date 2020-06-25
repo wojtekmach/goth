@@ -26,7 +26,8 @@ defmodule Goth do
 
     * `:name` - the name to register the server under.
 
-    * `:finch` - the name of the `Finch` pool to use.
+    * `:http_client` - a `{module, opts}` tuple describing a HTTP client,
+      see `Goth.HTTPClient` for more information.
 
     * `:credentials` - a map of credentials.
 
