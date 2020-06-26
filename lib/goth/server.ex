@@ -20,7 +20,7 @@ defmodule Goth.Server do
     if token do
       {:ok, token}
     else
-      request(config)
+      Token.fetch(config)
     end
   end
 
@@ -30,7 +30,7 @@ defmodule Goth.Server do
 
     # given calculating JWT for each request is expensive, we do it once
     # on system boot to hopefully fill in the cache.
-    case request(state) do
+    case Token.fetch(state) do
       {:ok, token} ->
         store_and_schedule_refresh(state, token)
 
@@ -44,7 +44,7 @@ defmodule Goth.Server do
 
   @impl true
   def handle_info(:refresh, state) do
-    case request(state) do
+    case Token.fetch(state) do
       {:ok, token} ->
         store_and_schedule_refresh(state, token)
         {:noreply, %{state | retries: @max_retries}}
@@ -63,10 +63,6 @@ defmodule Goth.Server do
     put(state, token)
     time = (token.expires_at - @refresh_before) * 1000
     Process.send_after(self(), :refresh, time)
-  end
-
-  defp request(config) do
-    Token.fetch(config.finch, config.url, config.credentials, config.scope)
   end
 
   defp get(name) do
