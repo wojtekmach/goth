@@ -1,48 +1,8 @@
 defmodule Goth do
-  @moduledoc """
-  Our re-implementation of [Goth](https://hex.pm/packages/goth).
-
-  Notable differences:
-
-    * Use finch instead of httpoison.
-
-    * Use jose (hi!) directly instead of going through joken.
-
-    * Use persistent_term to avoid single-process bottleneck.
-
-    * Configure different servers for different tokens instead of global config.
-    
-    * You add it to your own supervision tree.
-
-    * Simple built-in backoff.
-
-  On the flip side, we don't support everything Goth has, notably we:
-
-    * support only JSON credentials (and not the metadata service)
-
-    * support one scope per credentials
-
-    * haven't been around for more than 4 years!
-
-  ## Usage
-
-  Add Goth to your supervision tree:
-
-      credentials = "GOOGLE_APPLICATION_CREDENTIALS_JSON" |> System.fetch_env!() |> Jason.decode!()
-
-      children = [
-        {Goth, name: MyApp.Goth, finch: MyApp.Finch, credentials: credentials},
-        ...
-      ]
-
-      Supervisor.start_link(children, ...)
-
-  And use it:
-
-      Goth.fetch(MyApp.Goth)
-      #=> {:ok, %Goth.Token{}}
-
-  """
+  @moduledoc "README.md"
+             |> File.read!()
+             |> String.split("<!-- MDOC !-->")
+             |> Enum.fetch!(1)
 
   @doc """
   Fetches the token.
