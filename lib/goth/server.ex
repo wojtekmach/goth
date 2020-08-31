@@ -7,7 +7,7 @@ defmodule Goth.Server do
   @max_retries 3
   @refresh_before 30
 
-  defstruct [:name, :finch, :credentials, :url, :scope, :cooldown, retries: @max_retries]
+  defstruct [:name, :http_client, :credentials, :url, :scope, :cooldown, retries: @max_retries]
 
   def start_link(opts) do
     name = Keyword.fetch!(opts, :name)
@@ -26,7 +26,12 @@ defmodule Goth.Server do
 
   @impl true
   def init(opts) do
-    state = struct!(__MODULE__, opts)
+    state =
+      __MODULE__
+      |> struct!(opts)
+      |> Map.update!(:http_client, fn {module, opts} ->
+        {module, module.init(opts)}
+      end)
 
     # given calculating JWT for each request is expensive, we do it once
     # on system boot to hopefully fill in the cache.
@@ -70,7 +75,7 @@ defmodule Goth.Server do
   end
 
   defp put(state, token) do
-    config = Map.take(state, [:credentials, :scope, :url])
+    config = Map.take(state, [:http_client, :credentials, :scope, :url])
     :persistent_term.put({__MODULE__, state.name}, {config, token})
   end
 end

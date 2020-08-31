@@ -6,7 +6,7 @@ A re-implementation of [Goth](https://hex.pm/packages/goth).
 
 Notable differences:
 
-  * Use Finch instead of HTTPoison.
+  * Configurable HTTP client (with built-in support for Finch)
 
   * Use JOSE package directly instead of going through Joken.
 
@@ -33,7 +33,8 @@ Add Goth to your supervision tree:
     credentials = "GOOGLE_APPLICATION_CREDENTIALS_JSON" |> System.fetch_env!() |> Jason.decode!()
 
     children = [
-      {Goth, name: MyApp.Goth, finch: MyApp.Finch, credentials: credentials},
+      {Finch, name: MyApp.Finch},
+      {Goth, name: MyApp.Goth, http_client: {Goth.HTTPClient.Finch, name: MyApp.Finch}, credentials: credentials},
       ...
     ]
 
