@@ -31,8 +31,6 @@ defmodule Goth.HTTPClient.Finch do
     end
 
     _ = Application.ensure_all_started(:finch)
-    :ok
-
     struct!(__MODULE__, opts)
   end
 
