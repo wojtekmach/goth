@@ -39,9 +39,7 @@ defmodule Goth.HTTPClient do
               {:ok, %{status: status, headers: [header()], body: body()}}
               | {:error, Exception.t()}
 
-  @spec request(http_client(), method(), url(), [header()], body(), opts :: keyword()) ::
-          {:ok, %{status: status, headers: [header()], body: body()}}
-          | {:error, Exception.t()}
+  @doc false
   def request(http_client, method, url, headers, body, opts) do
     {module, initial_state} = http_client
     module.request(method, url, headers, body, opts, initial_state)
