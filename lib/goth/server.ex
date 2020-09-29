@@ -5,9 +5,17 @@ defmodule Goth.Server do
   alias Goth.Token
 
   @max_retries 3
-  @refresh_before 30
 
-  defstruct [:name, :http_client, :credentials, :url, :scope, :cooldown, retries: @max_retries]
+  defstruct [
+    :name,
+    :http_client,
+    :credentials,
+    :url,
+    :scope,
+    :cooldown,
+    refresh_before: 5 * 60,
+    retries: @max_retries
+  ]
 
   def start_link(opts) do
     name = Keyword.fetch!(opts, :name)
@@ -66,8 +74,11 @@ defmodule Goth.Server do
 
   defp store_and_schedule_refresh(state, token) do
     put(state, token)
-    time = (token.expires_at - @refresh_before) * 1000
-    Process.send_after(self(), :refresh, time)
+
+    time_in_seconds =
+      max(token.expires_at - System.system_time(:second) - state.refresh_before, 0)
+
+    Process.send_after(self(), :refresh, time_in_seconds * 1000)
   end
 
   defp get(name) do
