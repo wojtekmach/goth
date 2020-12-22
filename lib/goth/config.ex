@@ -3,7 +3,7 @@ defmodule Goth.Config do
   Fetches the `key` from the config.
 
   WARNING: This function serves as compatibility layer for https://hex.pm/packages/goth
-  and you should use `Goth.get_config/1` instead.
+  and you should use `Goth.config/1` instead.
 
   In order to use it, you need to set this global configuration:
 
