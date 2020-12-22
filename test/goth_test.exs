@@ -111,6 +111,37 @@ defmodule GothTest do
     assert Goth.config(test).credentials == credentials
   end
 
+  test "compatibility", %{test: test} do
+    bypass = Bypass.open()
+
+    Bypass.expect(bypass, fn conn ->
+      body = ~s|{"access_token":"dummy","expires_in":3599,"token_type":"Bearer"}|
+      Plug.Conn.resp(conn, 200, body)
+    end)
+
+    start_supervised!(
+      {Goth,
+       name: test,
+       http_client: {Goth.HTTPClient.Finch, name: Finch},
+       credentials: random_credentials(),
+       url: "http://localhost:#{bypass.port}"}
+    )
+
+    assert_raise ArgumentError, ~r"could not fetch application environment :default_server", fn ->
+      Goth.Token.for_scope("does-not-matter")
+    end
+
+    assert_raise ArgumentError, ~r"could not fetch application environment :default_server", fn ->
+      Goth.Config.get(:client_email)
+    end
+
+    Application.put_env(:goth, :default_server, test)
+
+    assert {:ok, %Goth.Token{}} = Goth.Token.for_scope("does-not-matter")
+    assert {:ok, "alice@example.com"} = Goth.Config.get(:client_email)
+    assert {:ok, "alice@example.com"} = Goth.Config.get("client_email")
+  end
+
   defp random_credentials() do
     %{
       "private_key" => random_private_key(),

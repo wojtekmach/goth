@@ -8,6 +8,29 @@ defmodule Goth.Token do
           type: String.t()
         }
 
+  @doc """
+  Fetches the token.
+
+  WARNING: This function serves as compatibility layer for https://hex.pm/packages/goth
+  and you should use `Goth.fetch/1` instead.
+
+  In order to use it, you need to set this global configuration:
+
+      config :goth,
+        default_server: server
+
+  Where `server` is the name of the server that was started with
+  `Goth.start_link/1`.
+
+  Note, given servers started with `Goth.start_link/1` are already configured
+  with a scope, the `scope` argument to this function is ignored.
+  """
+  @doc deprecated: "Use Goth.fetch/1 instead"
+  def for_scope(_scope) do
+    server = Application.fetch_env!(:goth, :default_server)
+    Goth.fetch(server)
+  end
+
   @doc false
   def fetch(config) do
     jwt = jwt(config.scope, config.credentials)
