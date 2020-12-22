@@ -52,6 +52,17 @@ defmodule Goth do
     opts |> with_default_opts() |> Goth.Server.child_spec()
   end
 
+  @doc """
+  Returns the configuration for the given `server`.
+  """
+  def config(server) do
+    {config, _token} = Goth.Server.get(server)
+    config
+  rescue
+    ArgumentError ->
+      raise RuntimeError, "Goth server #{inspect(server)} is not started"
+  end
+
   defp with_default_opts(opts) do
     opts
     |> Keyword.put_new(:scope, @scope)

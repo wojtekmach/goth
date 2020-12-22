@@ -81,7 +81,7 @@ defmodule Goth.Server do
     Process.send_after(self(), :refresh, time_in_seconds * 1000)
   end
 
-  defp get(name) do
+  def get(name) do
     :persistent_term.get({__MODULE__, name})
   end
 

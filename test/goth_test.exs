@@ -86,6 +86,31 @@ defmodule GothTest do
     assert_receive :pong, 1000
   end
 
+  test "config/1", %{test: test} do
+    assert_raise RuntimeError, fn ->
+      Goth.config(test)
+    end
+
+    credentials = random_credentials()
+
+    bypass = Bypass.open()
+
+    Bypass.expect(bypass, fn conn ->
+      body = ~s|{"access_token":"dummy","expires_in":3599,"token_type":"Bearer"}|
+      Plug.Conn.resp(conn, 200, body)
+    end)
+
+    start_supervised!(
+      {Goth,
+       name: test,
+       http_client: {Goth.HTTPClient.Finch, name: Finch},
+       credentials: credentials,
+       url: "http://localhost:#{bypass.port}"}
+    )
+
+    assert Goth.config(test).credentials == credentials
+  end
+
   defp random_credentials() do
     %{
       "private_key" => random_private_key(),
