@@ -43,7 +43,11 @@ defmodule Goth do
     opts |> with_default_opts() |> Goth.Server.start_link()
   end
 
-  @doc false
+  @doc """
+  Returns a supervision tree child specification.
+
+  The options are the same as passed to `start_link/1`.
+  """
   def child_spec(opts) do
     opts |> with_default_opts() |> Goth.Server.child_spec()
   end
